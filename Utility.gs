@@ -10,51 +10,6 @@ var Utility=new (function(){
     return column;
   };
   
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-  * create Amisi menu
-  */
-  //------------------------------------------------------------------------------------------------------------------
-  this.createMenu = function(){
-    
-    //create the menu voice
-    SpreadsheetApp.getUi()
-    .createMenu('BATCH TOOL')
-    .addItem('Open', 'openSidebar')
-    .addToUi()
-  }
-  //------------------------------------------------------------------------------------------------------------------
-  // END --  create menu
-  //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-  * open amis Sidebar
-  */
-  //------------------------------------------------------------------------------------------------------------------
-  this.openSidebar = function(){
-    dbName=Config.dbName;
-    apiKey=Config.apiKey;
-    //countryCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.Sheet.countryCell).getValue();
-    //datasourceCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.Sheet.datasourceCell).getValue();
-    
-    countryCell='Save data tool';
-    datasourceCell='';
-    
-    devMode=Config.devMode;
-    var html = HtmlService.createTemplateFromFile('menu')
-    .evaluate()
-    .setTitle('BATCH TOOL')
-    .setWidth(500)
-    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
-    SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
-    .showSidebar(html);
-  }
-  //------------------------------------------------------------------------------------------------------------------
-  // END --  open amis Sidebar
-  //------------------------------------------------------------------------------------------------------------------
-  
-  
   /**
   * includes html files into an html
   * @param  {string} filename

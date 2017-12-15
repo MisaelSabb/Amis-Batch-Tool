@@ -36,5 +36,22 @@ var DatabaseUtility=new function(){
      
      //IT PARSE VALUESE LIKE 2016/17 into 2016.0     
      return batchRowColumn[product_name.toLowerCase()][parseInt(year).toString()];
-   }      
+   }
+   
+   //it simulated the ADD NEW FORECAST
+   this.switchFrc=function (dataValuesForProduct,sliderFrcColumnFrom,sliderFrcColumnTo){
+     Logger.log(sliderFrcColumnFrom);
+     Logger.log(sliderFrcColumnTo);
+     sliderFrcColumnFrom= Utility.letterToColumn(sliderFrcColumnFrom)-1;
+     sliderFrcColumnTo= Utility.letterToColumn(sliderFrcColumnTo)-1;
+     Logger.log(sliderFrcColumnFrom);
+     Logger.log(sliderFrcColumnTo);
+     var length = dataValuesForProduct.length;
+     for(var i=0;i<length;i++){
+       //Logger.log(dataValuesForProduct[i][sliderFrcColumnTo]);
+       dataValuesForProduct[i][sliderFrcColumnTo]=dataValuesForProduct[i][sliderFrcColumnFrom];
+       dataValuesForProduct[i][sliderFrcColumnFrom]='';
+     }     
+     return dataValuesForProduct;
+   }
 }

@@ -31,7 +31,7 @@ var CsvUtility=new function(){
     var region_codelist=FirebaseConnector.getFireBaseDataParsed(region_codelistNode, userToken);
     var product_codelist=FirebaseConnector.getFireBaseDataParsed(product_codelistNode, userToken);
     var sliderFrc=FirebaseConnector.getFireBaseDataParsed(sliderFrcNode, userToken);
-    Logger.log(sliderFrc)
+    //Logger.log(sliderFrc)
     //var userDataConfig=FirebaseConnector.getFireBaseDataParsed(userDataConfigNode, userToken);
     
     //var batchCSVMappingNode= userDataConfig.batchCSVMapping;
@@ -46,7 +46,15 @@ var CsvUtility=new function(){
     var batchFrcFlagsColumn=FirebaseConnector.getFireBaseDataParsed(batchFrcFlagsColumnNode, userToken);
     var batchFrcNotesColumn=FirebaseConnector.getFireBaseDataParsed(batchFrcNotesColumnNode, userToken);
     var batchLastDateRow = FirebaseConnector.getFireBaseDataParsed(batchLastDateRowNode, userToken);
-        
+    
+    //important to understand if the system has to switch frc columns    
+    var isFrcA_AlreadySwitched=false;
+    var isFrcB_AlreadySwitched=false;
+    
+    //important to understand if the system has to switch frc columns    
+    var productsFrcA_AlreadySwitched=[];
+    var productsFrcB_AlreadySwitched=[];
+    
     var lenght = values.length;    
     //for(var i=1; i<lenght;i++){
       //values[i][sliderFrc.sliderFrcA.to]=values[i][sliderFrc.sliderFrcA.from];
@@ -75,6 +83,32 @@ var CsvUtility=new function(){
       if(realElementSpreadSheetRow < 0 || isNaN(realElementSpreadSheetRow)){
         continue;
       }else{
+        
+        //if is a frc A and if is not already switched for that product 
+        if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.A) > -1){
+         // Logger.log(values[i]);
+         // Logger.log(values[i][batchCSVMapping.season]);
+          if(productsFrcA_AlreadySwitched.indexOf(product_name)  == -1 ){
+            productsFrcA_AlreadySwitched.push(product_name);
+            dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+            //DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+          }
+          
+        }
+        
+        //if is a frc B and if is not already switched for that product 
+        if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.B) > -1 ){
+          //Logger.log(values[i]);
+          //Logger.log(values[i][batchCSVMapping.season]);
+          if(productsFrcB_AlreadySwitched.indexOf(product_name)  == -1){
+            productsFrcB_AlreadySwitched.push(product_name);
+            dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);
+            //DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);
+          }
+          
+            
+        }
+        
         //update value
         dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][parseInt(realElementSpreadSheetColumnFromYear).toString()]=value;
         //update last date
@@ -100,12 +134,13 @@ var CsvUtility=new function(){
         
       }      
     }    
-    for (var keys in dataValues){
-      Logger.log(keys);
-      Logger.log(dataValues[keys]);
-    }
+    //for (var keys in dataValues){
+      //Logger.log(keys);
+      //Logger.log(dataValues[keys]);
+    //}
    
-    
+   // Logger.log(productsFrcA_AlreadySwitched);
+   // Logger.log(productsFrcB_AlreadySwitched);
     FirebaseConnector.writeOnFirebase(dataValues,dataNode,userToken);
     
   }
