@@ -12,7 +12,7 @@ function uploadFileToGoogleDrive(data, file, name, email,userToken, uid) {
   
   try {
 
-    var dropbox = "My test upload";
+    var dropbox = "AmisCsvUpload";
     var folder, folders = DriveApp.getFoldersByName(dropbox);
     var date = new Date().getTime();    
     if (folders.hasNext()) {
@@ -26,6 +26,8 @@ function uploadFileToGoogleDrive(data, file, name, email,userToken, uid) {
         blob = Utilities.newBlob(bytes, contentType, file);
 
     var fileUploaded = folder.createFolder(date).createFile(blob);
+    
+    
     var csvData = Utilities.parseCsv(fileUploaded.getBlob().getDataAsString());
     
     CsvUtility.elaborateData(userToken,uid, csvData);  
