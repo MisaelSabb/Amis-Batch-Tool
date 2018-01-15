@@ -26,21 +26,25 @@ var CsvUtility=new function(){
     var sliderFrcNode = 'config/sliderFrc';
     //var userDataConfigNode ='users_data/'+uid;
     
+    //last update row
+    var batchLastUpdateRowNode= 'config/batchLastUpdateRow';
+    //last update column
+    var batchLastUpdateColumnNode= 'config/batchLastUpdateColumn';
+    
     var batchRowArray=FirebaseConnector.getFireBaseDataParsed(batchRowArrayNode, userToken);
     var batchRowColumn=FirebaseConnector.getFireBaseDataParsed(batchRowColumnNode, userToken);    
     var region_codelist=FirebaseConnector.getFireBaseDataParsed(region_codelistNode, userToken);
     var product_codelist=FirebaseConnector.getFireBaseDataParsed(product_codelistNode, userToken);
     var sliderFrc=FirebaseConnector.getFireBaseDataParsed(sliderFrcNode, userToken);
-    //Logger.log(sliderFrc)
-    //var userDataConfig=FirebaseConnector.getFireBaseDataParsed(userDataConfigNode, userToken);
     
-    //var batchCSVMappingNode= userDataConfig.batchCSVMapping;
-    //var dataNode = userDataConfig.batchDataNode;
+    var batchLastUpdateRow=FirebaseConnector.getFireBaseDataParsed(batchLastUpdateRowNode, userToken);
+    var batchLastUpdateColumn=FirebaseConnector.getFireBaseDataParsed(batchLastUpdateColumnNode, userToken);
+
     var dataNode,dataValues;
         
     
     var batchCSVMapping = FirebaseConnector.getFireBaseDataParsed(batchCSVMappingNode, userToken);
-    //var dataValues = FirebaseConnector.getFireBaseDataParsed(dataNode, userToken);
+
     
     var batchKindOfFrc=FirebaseConnector.getFireBaseDataParsed(batchKindOfFrcNode, userToken);
     var batchFrcFlagsColumn=FirebaseConnector.getFireBaseDataParsed(batchFrcFlagsColumnNode, userToken);
@@ -56,10 +60,7 @@ var CsvUtility=new function(){
     var productsFrcB_AlreadySwitched=[];
     
     var lenght = values.length;    
-    //for(var i=1; i<lenght;i++){
-      //values[i][sliderFrc.sliderFrcA.to]=values[i][sliderFrc.sliderFrcA.from];
-      //values[i][sliderFrc.sliderFrcB.to]=values[i][sliderFrc.sliderFrcB.from];
-    //}
+
     for(var i=1; i<lenght;i++){
       
       //set the DATA NODE where upload data
@@ -86,24 +87,19 @@ var CsvUtility=new function(){
         
         //if is a frc A and if is not already switched for that product 
         if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.A) > -1){
-         // Logger.log(values[i]);
-         // Logger.log(values[i][batchCSVMapping.season]);
+
           if(productsFrcA_AlreadySwitched.indexOf(product_name)  == -1 ){
             productsFrcA_AlreadySwitched.push(product_name);
             dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
-            //DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
           }
           
         }
         
         //if is a frc B and if is not already switched for that product 
-        if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.B) > -1 ){
-          //Logger.log(values[i]);
-          //Logger.log(values[i][batchCSVMapping.season]);
+        if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.B) > -1 ){          
           if(productsFrcB_AlreadySwitched.indexOf(product_name)  == -1){
             productsFrcB_AlreadySwitched.push(product_name);
-            dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);
-            //DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);
+            dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);            
           }
           
             
@@ -113,6 +109,17 @@ var CsvUtility=new function(){
         dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][parseInt(realElementSpreadSheetColumnFromYear).toString()]=value;
         //update last date
         dataValues[product_name][parseInt(batchLastDateRow[product_name]-1).toString()][parseInt(realElementSpreadSheetColumnFromYear).toString()]=date;
+        
+        var lastUpdateInFirebase  = new Date(dataValues[product_name][batchLastUpdateRow[product_name]][batchLastUpdateColumn[product_name]]);
+        var lastUpdateFromCsv = date;
+
+        //update the last update date on the spreadsheet
+        if(new Date(lastUpdateFromCsv) > lastUpdateInFirebase ){
+          //update last date update
+          //dataValues[product_name][batchLastUpdateRow[product_name]][batchLastUpdateColumn[product_name]]=new Date(lastUpdateFromCsv);          
+          //dataValues[product_name][batchLastUpdateRow[product_name]][batchLastUpdateColumn[product_name]]=moment(lastUpdateFromCsv).format('DD-MM-YYYY');          
+          dataValues[product_name][batchLastUpdateRow[product_name]][batchLastUpdateColumn[product_name]]=moment(new Date(lastUpdateFromCsv).toISOString()).utc();
+        }        
         
         //update FRC NOTES AND FLAGS
         //if(date.indexOf(batchKindOfFrc.A) > -1){
@@ -134,13 +141,6 @@ var CsvUtility=new function(){
         
       }      
     }    
-    //for (var keys in dataValues){
-      //Logger.log(keys);
-      //Logger.log(dataValues[keys]);
-    //}
-   
-   // Logger.log(productsFrcA_AlreadySwitched);
-   // Logger.log(productsFrcB_AlreadySwitched);
     FirebaseConnector.writeOnFirebase(dataValues,dataNode,userToken);
     
   }
