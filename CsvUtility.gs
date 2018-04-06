@@ -79,7 +79,7 @@ var CsvUtility=new function(){
       var realElementSpreadSheetColumnFromYear = Utility.letterToColumn(elementSpreadSheetColumnFromYear) -1 ;
       
       var value = values[i][batchCSVMapping.value];
-      var date = values[i][batchCSVMapping.date];      
+      var date = values[i][batchCSVMapping.date];
       
       if(realElementSpreadSheetRow < 0 || isNaN(realElementSpreadSheetRow)){
         continue;
@@ -140,7 +140,24 @@ var CsvUtility=new function(){
         //}
         
       }      
-    }    
+    } 
+    
+    //before write I'll check if some frc column it's empty... If empty force switch
+    for(var commodityLooped in batchRowArray)   {                  
+      if(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[commodityLooped],dataValues[commodityLooped],Utility.letterToColumn(sliderFrc.sliderFrcA.to))){
+        //Logger.log('column empty A');
+        dataValues[commodityLooped]= DatabaseUtility.switchFrc(dataValues[commodityLooped],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+      }else{
+        //Logger.log('column NOT empty A');
+      }      
+       if(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[commodityLooped],dataValues[commodityLooped],Utility.letterToColumn(sliderFrc.sliderFrcB.to))){
+        //Logger.log('column empty B');
+        dataValues[commodityLooped]= DatabaseUtility.switchFrc(dataValues[commodityLooped],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);         
+      }else{
+        //Logger.log('column NOT empty B');
+      }     
+    }
+    
     FirebaseConnector.writeOnFirebase(dataValues,dataNode,userToken);
     
   }

@@ -40,12 +40,12 @@ var DatabaseUtility=new function(){
    
    //it simulated the ADD NEW FORECAST
    this.switchFrc=function (dataValuesForProduct,sliderFrcColumnFrom,sliderFrcColumnTo){
-     Logger.log(sliderFrcColumnFrom);
-     Logger.log(sliderFrcColumnTo);
+     //Logger.log(sliderFrcColumnFrom);
+     //Logger.log(sliderFrcColumnTo);
      sliderFrcColumnFrom= Utility.letterToColumn(sliderFrcColumnFrom)-1;
      sliderFrcColumnTo= Utility.letterToColumn(sliderFrcColumnTo)-1;
-     Logger.log(sliderFrcColumnFrom);
-     Logger.log(sliderFrcColumnTo);
+     //Logger.log(sliderFrcColumnFrom);
+     //Logger.log(sliderFrcColumnTo);
      var length = dataValuesForProduct.length;
      for(var i=0;i<length;i++){
        //Logger.log(dataValuesForProduct[i][sliderFrcColumnTo]);
@@ -53,5 +53,18 @@ var DatabaseUtility=new function(){
        dataValuesForProduct[i][sliderFrcColumnFrom]='';
      }     
      return dataValuesForProduct;
+   }
+   
+   this.checkIfColumnIsEmpty= function(batchRowArrayForSpecificCommodity, valuesForSpecifiCommodity, yearColumnNumber){
+     
+     for(var i=0;i<batchRowArrayForSpecificCommodity.length;i++){
+       if(batchRowArrayForSpecificCommodity[i]){
+         if(valuesForSpecifiCommodity[batchRowArrayForSpecificCommodity[i]-1][yearColumnNumber-1]){           
+           //Logger.log('column not empty');
+           return false;
+         }
+       }
+     }
+     return true;
    }
 }
