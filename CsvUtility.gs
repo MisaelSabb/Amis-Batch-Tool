@@ -82,7 +82,7 @@ var CsvUtility=new function(){
 		var realElementSpreadSheetRow = elementSpreadSheetRow - 1 ;      
 		var realElementSpreadSheetColumnFromYear = Utility.letterToColumn(elementSpreadSheetColumnFromYear) -1 ;
 
-		var value = values[i][batchCSVMapping.value];
+      var value = values[i][batchCSVMapping.value].trim() ? values[i][batchCSVMapping.value] : "";
 		// Adding  "forecasting_methodology" and "notes"
 		var forecasting_methodology = values[i][batchCSVMapping.forecasting_methodology];
         
@@ -99,25 +99,33 @@ var CsvUtility=new function(){
 		//if is a frc A and if is not already switched for that product 
 		if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.A) > -1){
           
-			if(productsFrcA_AlreadySwitched.indexOf(product_name)  == -1 ){
+			if( (productsFrcA_AlreadySwitched.indexOf(product_name)  == -1)){
 				productsFrcA_AlreadySwitched.push(product_name);
-				dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+              if(!DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcA.from))){
+                dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+              }else{
+                //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+              }				
 			}
-          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['flagColumnA'])-1]=forecasting_methodology;
-          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['noteColumnA'])-1]=notes; 
+          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['flagColumnA'])-1]=forecasting_methodology.trim();
+          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['noteColumnA'])-1]=notes.trim(); 
           
-		  Logger.log(batchKindOfFrc.A+' '+realElementSpreadSheetRow+' flagColumnA='+etlConfig[product_name]['flagColumnA']);
+		  //Logger.log(batchKindOfFrc.A+' '+realElementSpreadSheetRow+' flagColumnA='+etlConfig[product_name]['flagColumnA']);
 		}
 
 		//if is a frc B and if is not already switched for that product 
 		if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.B) > -1 ){          
-		  if(productsFrcB_AlreadySwitched.indexOf(product_name)  == -1){
+		  if( (productsFrcB_AlreadySwitched.indexOf(product_name)  == -1)){
 		    productsFrcB_AlreadySwitched.push(product_name);
-		    dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);            
+            if(!DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcB.from))){
+              dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);            
+            }else{
+              //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);            
+            }		    
 		  }
-		  dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['flagColumnB'])-1]=forecasting_methodology;
-          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['noteColumnB'])-1]=notes; 
-          Logger.log(batchKindOfFrc.B+' '+realElementSpreadSheetRow+' flagColumnB='+etlConfig[product_name]['flagColumnB']);
+		  dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['flagColumnB'])-1]=forecasting_methodology.trim();
+          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['noteColumnB'])-1]=notes.trim(); 
+          //Logger.log(batchKindOfFrc.B+' '+realElementSpreadSheetRow+' flagColumnB='+etlConfig[product_name]['flagColumnB']);
 		}
         //Logger.log(etlConfig[product_name]['flagColumnA']);
 		//update value
@@ -161,20 +169,20 @@ var CsvUtility=new function(){
     } 
     
     //before write I'll check if some frc column it's empty... If empty force switch
-    for(var commodityLooped in batchRowArray)   {                  
-      if(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[commodityLooped],dataValues[commodityLooped],Utility.letterToColumn(sliderFrc.sliderFrcA.to))){
+    //for(var commodityLooped in batchRowArray)   {                  
+      //if(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[commodityLooped],dataValues[commodityLooped],Utility.letterToColumn(sliderFrc.sliderFrcA.to))){
         //Logger.log('column empty A');
-        dataValues[commodityLooped]= DatabaseUtility.switchFrc(dataValues[commodityLooped],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
-      }else{
+       // dataValues[commodityLooped]= DatabaseUtility.switchFrc(dataValues[commodityLooped],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+     // }else{
         //Logger.log('column NOT empty A');
-      }      
-       if(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[commodityLooped],dataValues[commodityLooped],Utility.letterToColumn(sliderFrc.sliderFrcB.to))){
+     // }      
+     //  if(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[commodityLooped],dataValues[commodityLooped],Utility.letterToColumn(sliderFrc.sliderFrcB.to))){
         //Logger.log('column empty B');
-        dataValues[commodityLooped]= DatabaseUtility.switchFrc(dataValues[commodityLooped],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);         
-      }else{
+     //   dataValues[commodityLooped]= DatabaseUtility.switchFrc(dataValues[commodityLooped],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);         
+    //  }else{
         //Logger.log('column NOT empty B');
-      }     
-    }
+   //   }     
+   // }
     FirebaseConnector.writeOnFirebase(dataValues,dataNode,userToken);
     
   }
