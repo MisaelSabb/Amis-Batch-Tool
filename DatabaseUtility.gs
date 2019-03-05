@@ -40,6 +40,7 @@ var DatabaseUtility=new function(){
    
    //it simulated the ADD NEW FORECAST
    this.switchFrc=function (dataValuesForProduct,sliderFrcColumnFrom,sliderFrcColumnTo){
+     //Logger.log(dataValuesForProduct);
      //Logger.log(sliderFrcColumnFrom);
      //Logger.log(sliderFrcColumnTo);
      sliderFrcColumnFrom= Utility.letterToColumn(sliderFrcColumnFrom)-1;
@@ -50,13 +51,34 @@ var DatabaseUtility=new function(){
      for(var i=0;i<length;i++){
        //Logger.log(dataValuesForProduct[i][sliderFrcColumnTo]);
        dataValuesForProduct[i][sliderFrcColumnTo]=dataValuesForProduct[i][sliderFrcColumnFrom];
-       dataValuesForProduct[i][sliderFrcColumnFrom]='';
+       dataValuesForProduct[i][sliderFrcColumnFrom]= '';
+     }     
+     return dataValuesForProduct;
+   }
+   
+   //copy forecast
+   this.copyFrc=function (dataValuesForProduct,sliderFrcColumnFrom,sliderFrcColumnTo){     
+     sliderFrcColumnFrom= Utility.letterToColumn(sliderFrcColumnFrom)-1;
+     sliderFrcColumnTo= Utility.letterToColumn(sliderFrcColumnTo)-1;
+     //Logger.log(sliderFrcColumnFrom);
+     //Logger.log(sliderFrcColumnTo);
+     var length = dataValuesForProduct.length;
+     for(var i=0;i<length;i++){
+       //Logger.log({'col': sliderFrcColumnTo, 'arr':dataValuesForProduct[i]});
+       //Logger.log(dataValuesForProduct[i][sliderFrcColumnTo]);
+       dataValuesForProduct[i][sliderFrcColumnTo]=dataValuesForProduct[i][sliderFrcColumnFrom];  
+       
      }     
      return dataValuesForProduct;
    }
    
    this.checkIfColumnIsEmpty= function(batchRowArrayForSpecificCommodity, valuesForSpecifiCommodity, yearColumnNumber){
-     
+     //Logger.log('batchRowArrayForSpecificCommodity');
+     //Logger.log(batchRowArrayForSpecificCommodity);
+     //Logger.log('valuesForSpecifiCommodity');
+     //Logger.log(valuesForSpecifiCommodity);
+     //Logger.log('yearColumnNumber');
+     //Logger.log(yearColumnNumber);
      for(var i=0;i<batchRowArrayForSpecificCommodity.length;i++){
        if(batchRowArrayForSpecificCommodity[i]){
          if(valuesForSpecifiCommodity[batchRowArrayForSpecificCommodity[i]-1][yearColumnNumber-1]){           

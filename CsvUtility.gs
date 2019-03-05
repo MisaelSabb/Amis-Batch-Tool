@@ -63,7 +63,7 @@ var CsvUtility=new function(){
     var productsFrcB_AlreadySwitched=[];
     
     var lenght = values.length;    
-
+    //Logger.log(lenght);
     for(var i=1; i<lenght;i++){
       
 		//set the DATA NODE where upload data
@@ -82,7 +82,7 @@ var CsvUtility=new function(){
 		var realElementSpreadSheetRow = elementSpreadSheetRow - 1 ;      
 		var realElementSpreadSheetColumnFromYear = Utility.letterToColumn(elementSpreadSheetColumnFromYear) -1 ;
 
-      var value = values[i][batchCSVMapping.value].trim() ? values[i][batchCSVMapping.value] : "";
+        var value = values[i][batchCSVMapping.value].trim() ? values[i][batchCSVMapping.value] : "";
 		// Adding  "forecasting_methodology" and "notes"
 		var forecasting_methodology = values[i][batchCSVMapping.forecasting_methodology];
         
@@ -98,15 +98,38 @@ var CsvUtility=new function(){
 
 		//if is a frc A and if is not already switched for that product 
 		if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.A) > -1){
-          
-			if( (productsFrcA_AlreadySwitched.indexOf(product_name)  == -1)){
+          if( productsFrcA_AlreadySwitched.indexOf(product_name)  == -1){
+            //dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+            dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+            Logger.log({'Copied=': product_name, 'List': productsFrcA_AlreadySwitched});
+            //Logger.log(dataValues[product_name][Utility.letterToColumn(sliderFrc.sliderFrcA.from)]);
 				productsFrcA_AlreadySwitched.push(product_name);
-              if(!DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcA.from))){
-                dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
-              }else{
-                //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
-              }				
-			}
+              //Logger.log(DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcA.from)));
+//              if(!DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcA.from))){
+//                //Logger.log(values[i][batchCSVMapping.value]);
+//                //dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+//                dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+//              }
+//            else{
+//                //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+//               
+//          
+//              }				
+          }
+          dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(sliderFrc.sliderFrcA.from)-1]=values[i][batchCSVMapping.value];
+         
+
+          //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+           //dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcA.from,sliderFrc.sliderFrcA.to);
+
+           Logger.log({'asheet':product_name,
+                      'brow': realElementSpreadSheetRow,
+                      'ccol':sliderFrc.sliderFrcA.from + Utility.letterToColumn(sliderFrc.sliderFrcA.from), 
+                      'eExVal': values[i][batchCSVMapping.value],
+                      'fRVal':dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(sliderFrc.sliderFrcA.from)-1],
+                       'gLastRVal':dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(sliderFrc.sliderFrcA.to)-1]
+                      });
+          
           dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['flagColumnA'])-1]=forecasting_methodology.trim();
           dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['noteColumnA'])-1]=notes.trim(); 
           
@@ -116,13 +139,19 @@ var CsvUtility=new function(){
 		//if is a frc B and if is not already switched for that product 
 		if(values[i][batchCSVMapping.season].indexOf(batchKindOfFrc.B) > -1 ){          
 		  if( (productsFrcB_AlreadySwitched.indexOf(product_name)  == -1)){
+             dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);
 		    productsFrcB_AlreadySwitched.push(product_name);
-            if(!DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcB.from))){
-              dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);            
-            }else{
-              //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);            
-            }		    
+//            if(!DatabaseUtility.checkIfColumnIsEmpty(batchRowArray[product_name],dataValues[product_name],Utility.letterToColumn(sliderFrc.sliderFrcB.from))){
+//              //dataValues[product_name]= DatabaseUtility.switchFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to, values[i][batchCSVMapping.value]);            
+//             
+//            }else{
+//              //dataValues[product_name]= DatabaseUtility.copyFrc(dataValues[product_name],sliderFrc.sliderFrcB.from,sliderFrc.sliderFrcB.to);
+//              
+//              
+//            }		    
 		  }
+           dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(sliderFrc.sliderFrcB.from)-1]=values[i][batchCSVMapping.value];
+          
 		  dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['flagColumnB'])-1]=forecasting_methodology.trim();
           dataValues[product_name][parseInt(realElementSpreadSheetRow).toString()][Utility.letterToColumn(etlConfig[product_name]['noteColumnB'])-1]=notes.trim(); 
           //Logger.log(batchKindOfFrc.B+' '+realElementSpreadSheetRow+' flagColumnB='+etlConfig[product_name]['flagColumnB']);
